@@ -1,0 +1,514 @@
+/* ==========================================================
+   愛の羅針盤 — 鑑定室 (ウィザード / 結果 / 課金) スタイル
+   ========================================================== */
+
+.fortune-body { min-height: 100vh; }
+
+.fortune-main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 110px 20px 120px;
+}
+
+/* 無料残り回数バッジ */
+.free-count {
+  margin-left: auto;
+  font-size: 0.74rem;
+  color: var(--gold-bright);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  padding: 5px 14px;
+  letter-spacing: 0.06em;
+}
+
+/* ==========================================================
+   ウィザード共通
+   ========================================================== */
+.wizard { position: relative; }
+
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 34px;
+}
+.progress-bar {
+  flex-grow: 1;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--gold), var(--rose));
+  transition: width 0.5s ease;
+}
+.progress-text { font-size: 0.72rem; color: var(--text-dim); white-space: nowrap; }
+
+.step {
+  animation: stepIn 0.55s ease both;
+}
+@keyframes stepIn {
+  from { opacity: 0; transform: translateY(26px); }
+  to { opacity: 1; transform: none; }
+}
+
+.step-q {
+  font-family: var(--serif);
+  font-size: clamp(1.2rem, 3.4vw, 1.6rem);
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 10px;
+  line-height: 1.7;
+}
+.step-sub {
+  text-align: center;
+  font-size: 0.84rem;
+  color: var(--text-dim);
+  margin-bottom: 34px;
+}
+
+/* ---------- 選択肢ボタン ---------- */
+.choice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.choice-btn {
+  padding: 18px 24px;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s, background 0.2s;
+}
+.choice-btn:hover {
+  transform: translateX(6px);
+  border-color: var(--gold);
+  background: rgba(212, 175, 106, 0.08);
+}
+.choice-btn small { display: block; color: var(--text-dim); font-size: 0.76rem; margin-top: 3px; }
+
+/* 2列グリッド版 (血液型など短い選択肢) */
+.choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.choice-grid .choice-btn { text-align: center; }
+.choice-grid .choice-btn:hover { transform: translateY(-4px); }
+
+/* ---------- 入力フォーム ---------- */
+.input-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 440px;
+  margin: 0 auto;
+}
+.input-form label { font-size: 0.8rem; color: var(--text-dim); }
+.input-form input[type="text"],
+.input-form select {
+  width: 100%;
+  padding: 14px 16px;
+  margin-top: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 1rem;
+}
+.input-form input:focus, .input-form select:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(212, 175, 106, 0.15);
+}
+.input-form select option { background: var(--ink-2); }
+.birth-row { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 10px; }
+
+.step-next {
+  margin: 34px auto 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* ---------- タロットカード選択 ---------- */
+.tarot-field {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  max-width: 560px;
+  margin: 0 auto;
+  perspective: 900px;
+}
+.tarot-card {
+  width: 76px; height: 122px;
+  border-radius: 10px;
+  cursor: pointer;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.5s, box-shadow 0.3s;
+  animation: cardDeal 0.6s ease both;
+}
+@keyframes cardDeal {
+  from { opacity: 0; transform: translateY(40px) rotate(6deg); }
+  to { opacity: 1; transform: none; }
+}
+.tarot-card:hover { transform: translateY(-10px); box-shadow: 0 14px 30px rgba(0,0,0,0.5); }
+.tarot-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  backface-visibility: hidden;
+  display: grid;
+  place-items: center;
+}
+.tarot-back {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(212,175,106,0.25) 0%, transparent 60%),
+    repeating-linear-gradient(45deg, #2c1f52 0 8px, #241a42 8px 16px);
+  border: 1px solid var(--gold);
+  color: var(--gold-bright);
+  font-size: 1.5rem;
+}
+.tarot-front {
+  background: linear-gradient(160deg, #3a2b63, #241a42);
+  border: 1px solid var(--gold-bright);
+  transform: rotateY(180deg);
+  color: var(--gold-bright);
+  flex-direction: column;
+  font-size: 1.7rem;
+}
+.tarot-front small { font-size: 0.56rem; letter-spacing: 0.1em; margin-top: 6px; color: var(--text-dim); }
+.tarot-card.flipped { transform: rotateY(180deg) translateY(-8px); pointer-events: none; }
+.tarot-card.flipped .tarot-back { pointer-events: none; }
+.tarot-count { text-align: center; margin-top: 22px; font-size: 0.8rem; color: var(--gold-bright); }
+
+/* ---------- スライダー ---------- */
+.slider-wrap { max-width: 440px; margin: 0 auto; text-align: center; }
+.slider-value {
+  font-family: var(--serif);
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: var(--gold-bright);
+  margin-bottom: 6px;
+}
+.slider-label { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 26px; min-height: 1.6em; }
+input[type="range"] {
+  width: 100%;
+  appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--gold), var(--rose));
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff, var(--gold));
+  border: 2px solid var(--gold-bright);
+  cursor: pointer;
+  box-shadow: 0 0 18px rgba(212, 175, 106, 0.6);
+}
+.slider-ends { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-dim); margin-top: 10px; }
+
+/* ---------- 水晶タップ ---------- */
+.crystal-wrap { text-align: center; }
+.crystal {
+  width: 170px; height: 170px;
+  margin: 10px auto 26px;
+  border-radius: 50%;
+  cursor: pointer;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255,255,255,0.75) 0%, transparent 26%),
+    radial-gradient(circle at 60% 65%, rgba(229,138,168,0.4) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(140,110,220,0.55) 0%, #2c1f52 75%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 46px rgba(140, 110, 220, 0.45), inset 0 0 40px rgba(255,255,255,0.12);
+  transition: transform 0.15s, box-shadow 0.3s;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.crystal:active { transform: scale(0.94); }
+.crystal.lit { box-shadow: 0 0 90px rgba(240, 207, 142, 0.8), inset 0 0 60px rgba(255,255,255,0.3); }
+.crystal-count { font-size: 0.8rem; color: var(--gold-bright); letter-spacing: 0.2em; }
+
+/* ---------- 鑑定中アニメーション ---------- */
+.divining { text-align: center; padding: 60px 0; }
+.divining-circle {
+  width: 130px; height: 130px;
+  margin: 0 auto 34px;
+  border-radius: 50%;
+  border: 1px solid var(--gold);
+  border-top-color: transparent;
+  animation: spin 1.6s linear infinite;
+  display: grid;
+  place-items: center;
+  font-size: 2rem;
+  color: var(--gold-bright);
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.divining-msg { font-family: var(--serif); font-size: 1.05rem; color: var(--gold-bright); min-height: 2em; }
+
+/* ==========================================================
+   鑑定結果
+   ========================================================== */
+.result-head { text-align: center; margin-bottom: 44px; }
+.result-eyebrow { font-size: 0.72rem; letter-spacing: 0.34em; color: var(--gold); margin-bottom: 14px; }
+.result-title {
+  font-family: var(--serif);
+  font-size: clamp(1.5rem, 4.4vw, 2.1rem);
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+.result-sub { font-size: 0.84rem; color: var(--text-dim); }
+
+/* 相性スコアの円 */
+.score-ring {
+  width: 190px; height: 190px;
+  margin: 30px auto;
+  position: relative;
+}
+.score-ring svg { transform: rotate(-90deg); }
+.score-ring circle { fill: none; stroke-width: 9; }
+.ring-bg { stroke: rgba(255, 255, 255, 0.1); }
+.ring-fg {
+  stroke: url(#ringGrad);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.score-num {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+}
+.score-num strong { font-size: 3rem; font-weight: 800; color: var(--gold-bright); line-height: 1; }
+.score-num span { font-size: 0.72rem; color: var(--text-dim); margin-top: 6px; }
+
+/* 章カード (LP用の section グローバル余白を打ち消す) */
+.chapter {
+  max-width: none;
+  padding: 0;
+  margin: 0 0 22px;
+  background: var(--card);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.chapter-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 22px;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-family: var(--serif);
+  font-size: 1.02rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+}
+.chapter-no {
+  flex-shrink: 0;
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  color: var(--gold);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+.chapter-arrow { margin-left: auto; color: var(--text-dim); transition: transform 0.3s; }
+.chapter.open .chapter-arrow { transform: rotate(180deg); }
+.chapter-body {
+  display: none;
+  padding: 4px 24px 26px;
+  font-size: 0.92rem;
+  color: var(--text);
+}
+.chapter.open .chapter-body { display: block; animation: stepIn 0.4s ease; }
+.chapter-body p { margin-bottom: 1.1em; }
+.chapter-body p:last-child { margin-bottom: 0; }
+
+/* 強調ボックス (転機の日付など) */
+.oracle-box {
+  margin: 14px 0;
+  padding: 16px 18px;
+  border-left: 2px solid var(--gold);
+  background: rgba(212, 175, 106, 0.07);
+  border-radius: 0 10px 10px 0;
+}
+.oracle-box strong { color: var(--gold-bright); font-family: var(--serif); }
+
+/* ロックされた章 */
+.chapter.locked .chapter-head { cursor: pointer; }
+.chapter.locked .chapter-no { color: var(--text-dim); border-color: rgba(255,255,255,0.15); }
+.lock-icon { color: var(--gold); margin-left: auto; }
+.locked-preview {
+  padding: 0 24px 22px;
+  position: relative;
+}
+.locked-text {
+  filter: blur(6px);
+  user-select: none;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+.locked-cta {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(180deg, transparent, rgba(26, 19, 48, 0.88) 55%);
+}
+.locked-cta p { font-size: 0.8rem; color: var(--gold-bright); font-family: var(--serif); }
+
+/* 365日カレンダー */
+.calendar-month { margin-bottom: 10px; }
+.calendar-month summary {
+  cursor: pointer;
+  font-family: var(--serif);
+  font-weight: 700;
+  padding: 12px 6px;
+  color: var(--gold-bright);
+  list-style: none;
+}
+.calendar-month summary::before { content: "☾ "; }
+.calendar-day {
+  display: flex;
+  gap: 12px;
+  padding: 10px 8px;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+  font-size: 0.82rem;
+}
+.calendar-date { flex-shrink: 0; width: 86px; color: var(--gold-bright); font-family: var(--serif); }
+.calendar-score { flex-shrink: 0; width: 54px; color: var(--rose); letter-spacing: 0.06em; }
+.calendar-text { color: var(--text-dim); }
+.calendar-text b { color: var(--text); font-weight: 500; }
+
+/* 結果末尾の誘導 */
+.result-footer {
+  margin-top: 48px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+.result-footer .again { font-size: 0.82rem; color: var(--text-dim); text-decoration: underline; cursor: pointer; background: none; border: none; }
+
+/* SNSシェア風の一言 */
+.result-share {
+  margin-top: 30px;
+  padding: 18px 22px;
+  border: 1px dashed var(--card-border);
+  border-radius: 14px;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+/* ==========================================================
+   課金 / 登録モーダル
+   ========================================================== */
+.paywall {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: rgba(13, 8, 24, 0.9);
+  backdrop-filter: blur(8px);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+.paywall-box {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  padding: 46px 32px 34px;
+  background: linear-gradient(170deg, #2c2152, var(--ink-2));
+  border: 1px solid var(--gold);
+  border-radius: 22px;
+  text-align: center;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+  animation: stepIn 0.4s ease;
+}
+.paywall-close {
+  position: absolute;
+  top: 12px; right: 16px;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.paywall-mark { color: var(--gold); font-size: 1.6rem; margin-bottom: 10px; }
+.paywall-box h2 { font-family: var(--serif); font-size: 1.25rem; margin-bottom: 14px; }
+.paywall-lead { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 26px; }
+
+.paywall-plans { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+.paywall-plan {
+  padding: 18px 20px;
+  border-radius: 14px;
+  border: 1px solid var(--card-border);
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: transform 0.2s, border-color 0.2s;
+  font-family: var(--sans);
+}
+.paywall-plan:hover { transform: translateY(-3px); border-color: var(--gold); }
+.plan-main {
+  background: linear-gradient(135deg, rgba(212, 175, 106, 0.18), rgba(229, 138, 168, 0.1));
+  border-color: var(--gold);
+}
+.pp-name { font-family: var(--serif); font-weight: 700; font-size: 1.02rem; color: var(--gold-bright); }
+.pp-price { font-size: 1.05rem; font-weight: 700; }
+.pp-price small { font-weight: 400; color: var(--text-dim); }
+.pp-desc { font-size: 0.76rem; color: var(--text-dim); }
+
+.paywall-note { font-size: 0.68rem; color: var(--text-dim); }
+
+.register-form { display: flex; flex-direction: column; gap: 16px; text-align: left; }
+.register-form input[type="email"] {
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 1rem;
+}
+.register-check { font-size: 0.76rem; color: var(--text-dim); display: flex; gap: 8px; align-items: flex-start; }
+.register-check a { text-decoration: underline; }
+
+@media (max-width: 640px) {
+  .fortune-main { padding-top: 90px; }
+  .tarot-card { width: 62px; height: 100px; }
+  .birth-row { grid-template-columns: 1.4fr 1fr 1fr; }
+}

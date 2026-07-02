@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鑑定室 | 愛の羅針盤</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/fortune.css">
+</head>
+<body class="fortune-body">
+
+<!-- ===== スクロール連動の多層背景 (LPと共通) ===== -->
+<div class="cosmos" aria-hidden="true">
+  <div class="cosmos-layer" id="stars-far"></div>
+  <div class="cosmos-layer" id="stars-mid"></div>
+  <div class="cosmos-layer" id="stars-near"></div>
+  <div class="cosmos-layer" id="nebula"></div>
+  <div class="moon" id="moon"></div>
+  <div class="fog fog-1" id="fog1"></div>
+  <div class="fog fog-2" id="fog2"></div>
+</div>
+
+<!-- ===== ヘッダー ===== -->
+<header class="site-header scrolled">
+  <a class="brand" href="index.html">
+    <span class="brand-mark">✦</span>
+    <span class="brand-name">愛の羅針盤</span>
+  </a>
+  <div class="free-count" id="free-count"></div>
+</header>
+
+<!-- ===== 鑑定ウィザード (中身は app.js が描画) ===== -->
+<main class="fortune-main">
+  <div class="wizard" id="wizard"></div>
+  <div class="result" id="result" hidden></div>
+</main>
+
+<!-- ===== 課金モーダル ===== -->
+<div class="paywall" id="paywall" hidden>
+  <div class="paywall-box">
+    <button class="paywall-close" id="paywall-close" aria-label="閉じる">×</button>
+    <p class="paywall-mark">✦</p>
+    <h2 id="paywall-title">この先は、プレミアム鑑定です</h2>
+    <p class="paywall-lead" id="paywall-lead">
+      ふたりの縁の核心 — 全20章と365日相性カレンダーは<br>プレミアム会員だけに開かれます。
+    </p>
+    <div class="paywall-plans">
+      <button class="paywall-plan plan-main" data-plan="premium">
+        <span class="pp-name">プレミアム</span>
+        <span class="pp-price">初月 ¥480 <small>/ 以降 月額¥980</small></span>
+        <span class="pp-desc">全章解放・鑑定し放題・毎朝「今日のふたり」</span>
+      </button>
+      <button class="paywall-plan" data-plan="free">
+        <span class="pp-name">無料会員登録</span>
+        <span class="pp-price">¥0</span>
+        <span class="pp-desc">第6章まで解放 + 無料鑑定を毎日1回に回復</span>
+      </button>
+    </div>
+    <p class="paywall-note">いつでも解約できます。本サービスは娯楽目的の占いコンテンツです。</p>
+  </div>
+</div>
+
+<!-- ===== 登録モーダル (モック) ===== -->
+<div class="paywall" id="register" hidden>
+  <div class="paywall-box">
+    <button class="paywall-close" id="register-close" aria-label="閉じる">×</button>
+    <p class="paywall-mark">✦</p>
+    <h2 id="register-title">会員登録</h2>
+    <p class="paywall-lead">メールアドレスだけで登録できます。</p>
+    <form id="register-form" class="register-form">
+      <input type="email" id="register-email" placeholder="メールアドレス" required>
+      <label class="register-check">
+        <input type="checkbox" required> 18歳以上であり、<a href="#" onclick="return false">利用規約</a>に同意します
+      </label>
+      <button type="submit" class="btn btn-gold" id="register-submit">登録して続きを読む</button>
+    </form>
+    <p class="paywall-note" id="register-note"></p>
+  </div>
+</div>
+
+<script src="js/bg.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
