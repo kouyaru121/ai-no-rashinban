@@ -97,19 +97,19 @@
   var GENRES = {
     aisho: {
       title: "ふたりの相性 完全鑑定",
-      steps: ["intro", "you", "partner", "relation", "want", "depth", "contact", "tarot", "crystal"]
+      steps: ["intro", "you", "partner", "relation", "want", "depth", "color", "contact", "tarot", "moon", "compass"]
     },
     renai: {
       title: "恋愛成就の行方",
-      steps: ["intro", "you", "partner", "stage", "want", "depth", "tarot", "crystal"]
+      steps: ["intro", "you", "partner", "stage", "want", "depth", "color", "tarot", "compass"]
     },
     furin: {
       title: "許されない恋の結末",
-      steps: ["intro", "you", "partner", "years", "hisword", "depth", "tarot", "crystal"]
+      steps: ["intro", "you", "partner", "years", "hisword", "depth", "color", "tarot", "compass"]
     },
     uwaki: {
       title: "浮気の兆候 徹底診断",
-      steps: ["intro", "you", "partner", "sign1", "sign2", "sign3", "depth", "crystal"]
+      steps: ["intro", "you", "partner", "sign1", "sign2", "sign3", "depth", "compass"]
     }
   };
 
@@ -318,24 +318,61 @@
       });
     },
 
-    crystal: function () {
+    // 直感の色選び
+    color: function () {
+      var html =
+        progressHtml() +
+        '<div class="step"><h2 class="step-q">いまのふたりを表す色は?</h2>' +
+        '<p class="step-sub">考えないで。最初に目が留まった色に触れてください。</p>' +
+        '<div class="color-grid">';
+      DATA.colors.forEach(function (c, i) {
+        html += '<button class="color-swatch" data-i="' + i + '" style="background:radial-gradient(circle at 32% 28%, rgba(255,255,255,0.35), transparent 40%), ' + c.code + ';animation-delay:' + (i * 0.05) + 's"><span>' + c.name + "</span></button>";
+      });
+      html += "</div></div>";
+      $wizard.innerHTML = html;
+      $wizard.querySelectorAll(".color-swatch").forEach(function (b) {
+        b.addEventListener("click", function () {
+          answers.color = parseInt(b.dataset.i, 10);
+          next();
+        });
+      });
+    },
+
+    // 月相選び
+    moon: function () {
+      var html =
+        progressHtml() +
+        '<div class="step"><h2 class="step-q">いまの心に近い月は、どれですか</h2>' +
+        '<p class="step-sub">月はあなたの深層を映します。直感で。</p>' +
+        '<div class="moon-grid">';
+      DATA.moons.forEach(function (m, i) {
+        html += '<button class="moon-btn" data-i="' + i + '"><span class="moon-icon">' + m.icon + "</span>" + m.name + "</button>";
+      });
+      html += "</div></div>";
+      $wizard.innerHTML = html;
+      $wizard.querySelectorAll(".moon-btn").forEach(function (b) {
+        b.addEventListener("click", function () {
+          answers.moon = parseInt(b.dataset.i, 10);
+          next();
+        });
+      });
+    },
+
+    // 羅針盤を回す (フィナーレの儀式)
+    compass: function () {
       $wizard.innerHTML =
         progressHtml() +
-        '<div class="step crystal-wrap"><h2 class="step-q">最後に、水晶へ5回触れてください</h2>' +
-        '<p class="step-sub">あなたの「気」を鑑定に映します。想いを込めて。</p>' +
-        '<div class="crystal" id="cr"></div>' +
-        '<p class="crystal-count" id="cc">0 / 5</p></div>';
-      var cr = document.getElementById("cr");
-      var taps = 0;
-      cr.addEventListener("click", function () {
-        taps++;
-        cr.classList.add("lit");
-        setTimeout(function () { cr.classList.remove("lit"); }, 260);
-        document.getElementById("cc").textContent = Math.min(taps, 5) + " / 5";
-        if (taps === 5) {
-          answers.taps = taps;
-          setTimeout(next, 700);
-        }
+        '<div class="step"><h2 class="step-q">最後に、羅針盤を回してください</h2>' +
+        '<p class="step-sub">' + (answers.partner ? answers.partner.name + "さん" : "あの人") + "を思い浮かべながら、指で勢いをつけて。<br>針が止まった場所が、ふたりの縁の入口です。</p>" +
+        '<div class="compass-stage" id="cstage">' + Compass.svg(320, null) + "</div>" +
+        '<p class="compass-hint" id="chint">— 指でまわす —</p></div>';
+      var stage = document.getElementById("cstage");
+      Compass.spinnable(stage, function (finalAngle) {
+        answers.compassAngle = Math.round(finalAngle);
+        var dirs = ["愛", "縁", "情", "運"];
+        var dir = dirs[Math.round(finalAngle / 90) % 4];
+        document.getElementById("chint").textContent = "針は「" + dir + "」を指しました";
+        setTimeout(next, 1400);
       });
     }
   };
@@ -417,7 +454,7 @@
       "鑑定書を綴っています…"
     ];
     $wizard.innerHTML =
-      '<div class="divining"><div class="divining-circle">✦</div>' +
+      '<div class="divining"><div class="divining-compass">' + Compass.svg(170, "dvn") + "</div>" +
       '<p class="divining-msg" id="dm"></p></div>';
     var i = 0;
     var dm = document.getElementById("dm");
@@ -443,9 +480,11 @@
     var u = Engine.buildProfile(answers.you);
     var p = Engine.buildProfile(answers.partner);
 
-    // 同じ入力なら同じ結果になるシード
+    // 同じ入力なら同じ結果になるシード (意図的な選択も織り込む)
     var seedStr = genre + "|" + JSON.stringify(answers.you) + "|" + JSON.stringify(answers.partner) +
-      "|" + (answers.relation || answers.stage || answers.years || answers.sign1 || "");
+      "|" + (answers.relation || answers.stage || answers.years || answers.sign1 || "") +
+      "|" + (answers.color !== undefined ? answers.color : "") +
+      "|" + (answers.moon !== undefined ? answers.moon : "");
     var seed = Engine.hashSeed(seedStr);
 
     // テンプレ差し込み用の共通コンテキスト
@@ -483,7 +522,35 @@
     $wizard.innerHTML = "";
     $result.hidden = false;
     lastResultRenderer();
+    initReadProgress();
     window.scrollTo({ top: 0 });
+  }
+
+  // ---------- 読了プログレスバー + モバイル固定CTA ----------
+  function initReadProgress() {
+    if (!document.querySelector(".read-progress")) {
+      var bar = document.createElement("div");
+      bar.className = "read-progress";
+      document.body.appendChild(bar);
+    }
+    if (!document.querySelector(".sticky-cta") && userTier() < 2) {
+      var cta = document.createElement("div");
+      cta.className = "sticky-cta";
+      cta.innerHTML =
+        '<p class="sticky-cta-text"><strong>この鑑定書の続きを解放</strong>全章 + 365日カレンダー</p>' +
+        '<button class="btn btn-gold">初月¥480</button>';
+      cta.querySelector(".btn").addEventListener("click", openPaywall);
+      document.body.appendChild(cta);
+    }
+    window.addEventListener("scroll", function () {
+      var h = document.body.scrollHeight - window.innerHeight;
+      var pct = h > 0 ? (window.scrollY / h) * 100 : 0;
+      var bar = document.querySelector(".read-progress");
+      if (bar) bar.style.width = pct + "%";
+      // ある程度読み進めたら固定CTAを出す
+      var cta = document.querySelector(".sticky-cta");
+      if (cta) cta.classList.toggle("show", pct > 18 && userTier() < 2);
+    }, { passive: true });
   }
 
   // 章HTMLの組み立て (tier: 0=無料 1=無料会員 2=プレミアム)
@@ -511,6 +578,56 @@
   }
 
   function bindChapterEvents() {
+    var chapters = Array.prototype.slice.call($result.querySelectorAll(".chapter"));
+
+    // 各章に id を振り、開いた章の末尾に「次の章へ」を付ける
+    chapters.forEach(function (ch, i) {
+      ch.id = "ch-" + (i + 1);
+      var body = ch.querySelector(".chapter-body");
+      var nextCh = chapters[i + 1];
+      if (body && nextCh) {
+        var btn = document.createElement("button");
+        btn.className = "next-chapter";
+        btn.textContent = "▸ 次の章へすすむ";
+        btn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          ch.classList.remove("open");
+          if (nextCh.classList.contains("locked")) {
+            openPaywall();
+          } else {
+            nextCh.classList.add("open");
+          }
+          nextCh.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+        body.appendChild(btn);
+      }
+    });
+
+    // 目次を結果ヘッダー直後に生成 (章が6つ以上あるときだけ)
+    if (chapters.length >= 6 && !$result.querySelector(".toc")) {
+      var toc = document.createElement("nav");
+      toc.className = "toc";
+      var links = "";
+      chapters.forEach(function (ch, i) {
+        var no = i + 1;
+        var title = ch.querySelector(".chapter-head").textContent.replace(/^第\d+章/, "").replace(/[▾🔒]/g, "").trim();
+        var locked = ch.classList.contains("locked");
+        links += '<a href="#ch-' + no + '" class="' + (locked ? "toc-locked" : "") + '">' +
+          '<span class="toc-no">' + no + "章</span>" + title + (locked ? " 🔒" : "") + "</a>";
+      });
+      toc.innerHTML = '<p class="toc-title">✦ 鑑定書の目次</p><div class="toc-grid">' + links + "</div>";
+      var head = $result.querySelector(".result-head");
+      head.parentNode.insertBefore(toc, head.nextSibling);
+      toc.querySelectorAll("a").forEach(function (a, i) {
+        a.addEventListener("click", function (e) {
+          e.preventDefault();
+          var ch = chapters[i];
+          if (!ch.classList.contains("locked")) ch.classList.add("open");
+          ch.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      });
+    }
+
     $result.querySelectorAll("[data-toggle]").forEach(function (h) {
       h.addEventListener("click", function () {
         h.closest(".chapter").classList.toggle("open");
@@ -544,9 +661,14 @@
     var html =
       '<div class="result-head">' +
       '<p class="result-eyebrow">COMPATIBILITY READING</p>' +
-      '<h1 class="result-title">' + u.name + " と " + p.name + " の鑑定書</h1>" +
-      '<p class="result-sub">' + u.zodiac + "・" + u.blood + "型 × " + p.zodiac + "・" + p.blood + "型 / 全20章</p>" +
-      scoreRing(ctx.score) +
+      '<h1 class="result-title">ふたりの鑑定書</h1>' +
+      '<div class="result-pair">' +
+      '<span class="pair-name">' + u.name + '<span class="pair-sub">' + u.zodiac + "・" + u.blood + "型・" + u.eto + "年</span></span>" +
+      '<span class="pair-and">✦</span>' +
+      '<span class="pair-name">' + p.name + '<span class="pair-sub">' + p.zodiac + "・" + p.blood + "型・" + p.eto + "年</span></span>" +
+      "</div>" +
+      '<p class="result-sub">全20章 + 365日相性カレンダー</p>' +
+      Compass.dial(ctx.score) +
       "</div>";
 
     // ---- 第1〜3章 (無料) ----
@@ -590,7 +712,26 @@
     html += chapterHtml(15, p.name + "の心の落とし方", fillPickN(rng, C.strategyCore, 2, ctx), 2);
     html += chapterHtml(16, "すれ違い・復縁の航路図", fillPickN(rng, C.reunionCore, 2, ctx), 2);
 
+    // あなたが選んだ色・月の「意味」を返す (選んでいる感の回収)
+    var pickedColor = answers.color !== undefined ? DATA.colors[answers.color] : null;
+    var pickedMoon = answers.moon !== undefined ? DATA.moons[answers.moon] : null;
+    var chosen = "";
+    if (pickedColor) chosen += '<div class="oracle-box"><strong>あなたが選んだ「' + pickedColor.name + '」:</strong> ' + pickedColor.mean + "</div>";
+    if (pickedMoon) chosen += '<div class="oracle-box"><strong>あなたが選んだ「' + pickedMoon.name + '」:</strong> ' + pickedMoon.mean + "</div>";
+    if (answers.compassAngle !== undefined) {
+      var dirs = ["愛", "縁", "情", "運"];
+      var dirMean = {
+        "愛": "針は「愛」。感情そのものが今のふたりの推進力です",
+        "縁": "針は「縁」。人の繋がりが追い風を運ぶ配置です",
+        "情": "針は「情」。積み重ねた時間が効いてくる配置です",
+        "運": "針は「運」。流れに乗るべき時。抗わないこと"
+      };
+      var d = dirs[Math.round(answers.compassAngle / 90) % 4];
+      chosen += '<div class="oracle-box"><strong>羅針盤の針:</strong> ' + dirMean[d] + "</div>";
+    }
+
     html += chapterHtml(17, "ふたりの開運チャーム一覧",
+      chosen +
       '<div class="oracle-box"><strong>ラッキーカラー:</strong> ' + ctx.color + "</div>" +
       '<div class="oracle-box"><strong>ラッキーアイテム:</strong> ' + ctx.item + "</div>" +
       '<div class="oracle-box"><strong>縁を呼ぶ場所:</strong> ' + ctx.place + "</div>" +
@@ -611,26 +752,7 @@
     html += resultFooter();
     $result.innerHTML = html;
     bindChapterEvents();
-    animateRing();
-  }
-
-  // スコアリング (SVG円)
-  function scoreRing(score) {
-    var r = 82, circ = 2 * Math.PI * r;
-    return (
-      '<div class="score-ring"><svg width="190" height="190">' +
-      '<defs><linearGradient id="ringGrad"><stop offset="0%" stop-color="#d4af6a"/><stop offset="100%" stop-color="#e58aa8"/></linearGradient></defs>' +
-      '<circle class="ring-bg" cx="95" cy="95" r="' + r + '"/>' +
-      '<circle class="ring-fg" cx="95" cy="95" r="' + r + '" stroke-dasharray="' + circ + '" stroke-dashoffset="' + circ + '" data-target="' + (circ * (1 - score / 100)) + '"/>' +
-      '</svg><div class="score-num"><strong>' + score + '</strong><span>総合相性</span></div></div>'
-    );
-  }
-  function animateRing() {
-    var fg = $result.querySelector(".ring-fg");
-    if (!fg) return;
-    requestAnimationFrame(function () {
-      setTimeout(function () { fg.style.strokeDashoffset = fg.dataset.target; }, 80);
-    });
+    Compass.animateDial($result, ctx.score);
   }
 
   // 12ヶ月運勢
@@ -717,8 +839,12 @@
     var html =
       '<div class="result-head">' +
       '<p class="result-eyebrow">FORTUNE READING</p>' +
-      '<h1 class="result-title">' + u.name + "さんの" + titles[genre] + "</h1>" +
-      '<p class="result-sub">' + u.zodiac + "・" + u.blood + "型 / お相手: " + p.name + "さん (" + p.zodiac + ")</p></div>";
+      '<h1 class="result-title">' + titles[genre] + "</h1>" +
+      '<div class="result-pair">' +
+      '<span class="pair-name">' + u.name + '<span class="pair-sub">' + u.zodiac + "・" + u.blood + "型</span></span>" +
+      '<span class="pair-and">✦</span>' +
+      '<span class="pair-name">' + p.name + '<span class="pair-sub">' + p.zodiac + "・" + p.blood + "型</span></span>" +
+      "</div></div>";
 
     sections.forEach(function (s) {
       html += chapterHtml(s[0], s[1], s[2], s[3]);

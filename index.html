@@ -4,11 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>愛の羅針盤 | 恋愛・不倫・浮気の本格占い — 無料鑑定実施中</title>
-<meta name="description" content="累計鑑定30万件。恋愛・不倫・浮気・相性を specifics まで断言する本格占い。今なら無料で3回鑑定できます。">
+<meta name="description" content="累計鑑定30万件。恋愛・不倫・浮気・相性を「いつ・どこで・何が」まで断言する本格占い。今なら無料で3回鑑定できます。">
+<!-- OGP (Threads / SNS 共有用) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="愛の羅針盤 | その恋の答えは、もう出ています。">
+<meta property="og:description" content="日付と行動まで断言する恋愛・不倫・浮気の本格鑑定。無料で3回占えます。">
+<meta property="og:url" content="https://kouyaru121.github.io/ai-no-rashinban/">
+<meta property="og:image" content="https://kouyaru121.github.io/ai-no-rashinban/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#1a1330">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%231a1330' stroke='%23d4af6a' stroke-width='4'/%3E%3Cpath d='M50 18 L56 48 L50 56 L44 48 Z' fill='%23e58aa8'/%3E%3Cpath d='M50 82 L44 52 L50 44 L56 52 Z' fill='%23ede7f6' opacity='.6'/%3E%3Ccircle cx='50' cy='50' r='5' fill='%23f0cf8e'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=20260703a">
 </head>
 <body>
 
@@ -41,6 +50,7 @@
 
   <!-- ===== ヒーロー ===== -->
   <section class="hero">
+    <div class="hero-compass" id="hero-compass" aria-hidden="true"></div>
     <p class="hero-eyebrow">Threads で話題 — 累計鑑定 302,417 件</p>
     <h1 class="hero-title">
       その恋の答えは、<br>
@@ -63,6 +73,19 @@
       <div class="proof-item"><strong>30万件</strong><span>累計鑑定数</span></div>
     </div>
     <div class="scroll-hint"><span></span>SCROLL</div>
+  </section>
+
+  <!-- ===== 今日の恋みくじ (1タップ無料) ===== -->
+  <section class="omikuji reveal" id="omikuji">
+    <div class="ornament">✦</div>
+    <h2 class="sec-title"><span class="sec-en">Daily Omikuji</span>今日の恋みくじ</h2>
+    <div class="omikuji-box">
+      <p class="omikuji-date" id="omikuji-date"></p>
+      <div class="omikuji-btn-wrap" id="omikuji-area">
+        <button class="omikuji-seal" id="omikuji-btn">封を<br>ひらく</button>
+      </div>
+      <p class="omikuji-note">毎日0時に引き直せます。深く知りたくなったら、本鑑定へ。</p>
+    </div>
   </section>
 
   <!-- ===== 共感セクション ===== -->
@@ -228,7 +251,10 @@
   </div>
 </div>
 
-<script src="js/bg.js"></script>
-<script src="js/main.js"></script>
+<script src="js/bg.js?v=20260703a"></script>
+<script src="js/compass.js?v=20260703a"></script>
+<script src="js/engine.js?v=20260703a"></script>
+<script src="js/data.js?v=20260703a"></script>
+<script src="js/main.js?v=20260703a"></script>
 </body>
 </html>

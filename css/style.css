@@ -595,3 +595,147 @@ section {
   color: var(--text-dim);
   text-decoration: underline;
 }
+
+/* ==========================================================
+   コンパス (羅針盤) — サイトの象徴
+   ========================================================== */
+.compass-svg { display: block; }
+.cmp-ring-outer { fill: none; stroke: rgba(212, 175, 106, 0.55); stroke-width: 1.4; }
+.cmp-ring { fill: none; stroke: rgba(212, 175, 106, 0.32); stroke-width: 0.8; }
+.cmp-ring-thin { fill: none; stroke: rgba(212, 175, 106, 0.18); stroke-width: 0.6; }
+.cmp-tick { stroke: rgba(212, 175, 106, 0.35); stroke-width: 0.8; }
+.cmp-tick-major { stroke: rgba(240, 207, 142, 0.8); stroke-width: 1.6; }
+.cmp-rose-blade { fill: rgba(212, 175, 106, 0.28); stroke: rgba(240, 207, 142, 0.5); stroke-width: 0.5; }
+.cmp-letters text {
+  font-family: "Shippori Mincho", serif;
+  font-size: 15px;
+  font-weight: 700;
+  fill: #f0cf8e;
+  letter-spacing: 0;
+}
+.cmp-needle-n { fill: #e58aa8; }
+.cmp-needle-s { fill: rgba(237, 231, 246, 0.55); }
+.cmp-heart { fill: #e58aa8; }
+.cmp-pivot { fill: #f0cf8e; stroke: #2a1e0a; stroke-width: 1; }
+.cmp-needle-g { transition: transform 1.1s cubic-bezier(0.34, 1.4, 0.44, 1); }
+
+/* ---------- ヒーローの巨大羅針盤 ---------- */
+.hero-compass {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -54%);
+  width: min(88vw, 640px);
+  height: min(88vw, 640px);
+  opacity: 0.22;
+  pointer-events: none;
+  z-index: -1;
+}
+/* ヒーロー内では針も文字も背景として控えめに */
+.hero-compass .cmp-needle-n { fill: rgba(229, 138, 168, 0.55); }
+.hero-compass .cmp-heart { fill: rgba(229, 138, 168, 0.55); }
+.hero-compass .cmp-needle-s { fill: rgba(237, 231, 246, 0.3); }
+.hero-compass .cmp-letters text { fill: rgba(240, 207, 142, 0.65); }
+.hero-compass .cmp-pivot { stroke: none; fill: rgba(240, 207, 142, 0.7); }
+.hero-compass .compass-svg { width: 100%; height: 100%; }
+.hero-compass .cmp-rose,
+.hero-compass .cmp-ring-outer,
+.hero-compass .cmp-tick { animation: roseSpin 140s linear infinite; transform-origin: 100px 100px; }
+@keyframes roseSpin { to { transform: rotate(360deg); } }
+.hero { position: relative; }
+
+/* ---------- 今日の恋みくじ (1タップ占い) ---------- */
+.omikuji {
+  text-align: center;
+}
+.omikuji-box {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 40px 30px;
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(229, 138, 168, 0.08), transparent 60%),
+    var(--card);
+  position: relative;
+  overflow: hidden;
+}
+.omikuji-date { font-size: 0.74rem; letter-spacing: 0.3em; color: var(--gold); margin-bottom: 16px; }
+.omikuji-btn-wrap { min-height: 150px; display: grid; place-items: center; }
+.omikuji-seal {
+  width: 110px; height: 110px;
+  border-radius: 50%;
+  border: 1px solid var(--gold);
+  background: radial-gradient(circle at 35% 30%, #3d2a66, #241a42);
+  color: var(--gold-bright);
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  line-height: 1.5;
+  transition: transform 0.25s, box-shadow 0.25s;
+  box-shadow: 0 0 24px rgba(212, 175, 106, 0.2);
+  animation: sealBreath 3s ease-in-out infinite;
+}
+@keyframes sealBreath {
+  0%, 100% { box-shadow: 0 0 22px rgba(212, 175, 106, 0.2); }
+  50% { box-shadow: 0 0 44px rgba(229, 138, 168, 0.45); }
+}
+.omikuji-seal:hover { transform: scale(1.06) rotate(-3deg); }
+.omikuji-result { animation: stepInLp 0.7s ease both; }
+@keyframes stepInLp {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+.omikuji-rank {
+  font-family: var(--serif);
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(120deg, var(--gold-bright), var(--rose));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 10px;
+}
+.omikuji-text { font-size: 0.94rem; color: var(--text); margin-bottom: 20px; line-height: 2; }
+.omikuji-cta { font-size: 0.8rem; }
+.omikuji-note { margin-top: 14px; font-size: 0.7rem; color: var(--text-dim); }
+
+/* ---------- セクション飾り罫 ---------- */
+.ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  color: var(--gold);
+  margin: 0 auto 18px;
+  font-size: 0.8rem;
+}
+.ornament::before, .ornament::after {
+  content: "";
+  width: 70px;
+  height: 1px;
+  background: linear-gradient(to var(--dir, right), transparent, var(--gold));
+}
+.ornament::after { --dir: left; }
+
+/* ---------- 漂う花びら ---------- */
+.petal {
+  position: fixed;
+  top: -4vh;
+  font-size: 14px;
+  color: rgba(229, 138, 168, 0.5);
+  pointer-events: none;
+  z-index: 1;
+  animation: petalFall linear infinite;
+}
+@keyframes petalFall {
+  0% { transform: translateY(-4vh) translateX(0) rotate(0deg); opacity: 0; }
+  8% { opacity: 0.8; }
+  100% { transform: translateY(108vh) translateX(var(--sway, 60px)) rotate(340deg); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .petal, .hero-compass .cmp-rose { animation: none !important; }
+}

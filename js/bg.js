@@ -46,8 +46,11 @@
       if (far)  far.style.transform  = "translateY(" + (-y * 0.06) + "px)";
       if (mid)  mid.style.transform  = "translateY(" + (-y * 0.14) + "px)";
       if (near) near.style.transform = "translateY(" + (-y * 0.26) + "px)";
-      // 月はゆっくり沈みながら少し横へ
-      if (moon) moon.style.transform = "translate(" + (-y * 0.04) + "px," + (y * 0.18) + "px)";
+      // 月はゆっくり沈みながら少し横へ、深く読むほど霞んで消える
+      if (moon) {
+        moon.style.transform = "translate(" + (-y * 0.04) + "px," + (y * 0.18) + "px)";
+        moon.style.opacity = Math.max(0, 1 - y / 1200);
+      }
       // 霧は左右にたなびく
       if (fog1) fog1.style.transform = "translate(" + (y * 0.08) + "px," + (-y * 0.05) + "px)";
       if (fog2) fog2.style.transform = "translate(" + (-y * 0.06) + "px," + (-y * 0.08) + "px)";
