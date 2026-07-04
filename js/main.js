@@ -63,7 +63,16 @@
     var dateStr = today.getFullYear() + "年" + (today.getMonth() + 1) + "月" + today.getDate() + "日";
     document.getElementById("omikuji-date").textContent = dateStr + " の恋みくじ";
 
+    var opening = false;
     omikujiBtn.addEventListener("click", function () {
+      if (opening) return;
+      opening = true;
+      // 封が震えてから開く
+      omikujiBtn.classList.add("shake");
+      setTimeout(reveal, 620);
+    });
+
+    function reveal() {
       // 日付でシード固定: 同じ日は同じ結果 (引き直し不可の建て付け)
       var seed = Engine.hashSeed("omikuji|" + today.toDateString());
       var rng = Engine.createRng(seed);
@@ -85,7 +94,12 @@
         '<a class="btn btn-gold omikuji-cta" href="fortune.html?g=aisho">この先を、本鑑定で視る →</a>' +
         '<p class="omikuji-share"><a target="_blank" rel="noopener" href="https://www.threads.net/intent/post?text=' + shareText + '">🧭 みくじを Threads でシェア</a></p>' +
         "</div>";
-    });
+      // 開封のきらめき
+      if (window.FX) {
+        var box = document.getElementById("omikuji-area");
+        FX.heartBurst(box);
+      }
+    }
   }
 
   // ---------- 漂う花びら ----------

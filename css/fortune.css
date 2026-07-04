@@ -93,7 +93,7 @@
 .choice-btn:hover {
   transform: translateX(6px);
   border-color: var(--gold);
-  background: rgba(212, 175, 106, 0.08);
+  background: rgba(217, 166, 124, 0.08);
 }
 .choice-btn small { display: block; color: var(--text-dim); font-size: 0.76rem; margin-top: 3px; }
 
@@ -132,7 +132,7 @@
 .input-form input:focus, .input-form select:focus {
   outline: none;
   border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(212, 175, 106, 0.15);
+  box-shadow: 0 0 0 3px rgba(217, 166, 124, 0.15);
 }
 .input-form select option { background: var(--ink-2); }
 .birth-row { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 10px; }
@@ -221,7 +221,7 @@ input[type="range"]::-webkit-slider-thumb {
   background: radial-gradient(circle at 35% 30%, #fff, var(--gold));
   border: 2px solid var(--gold-bright);
   cursor: pointer;
-  box-shadow: 0 0 18px rgba(212, 175, 106, 0.6);
+  box-shadow: 0 0 18px rgba(217, 166, 124, 0.6);
 }
 .slider-ends { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-dim); margin-top: 10px; }
 
@@ -243,7 +243,7 @@ input[type="range"]::-webkit-slider-thumb {
   -webkit-tap-highlight-color: transparent;
 }
 .crystal:active { transform: scale(0.94); }
-.crystal.lit { box-shadow: 0 0 90px rgba(240, 207, 142, 0.8), inset 0 0 60px rgba(255,255,255,0.3); }
+.crystal.lit { box-shadow: 0 0 90px rgba(243, 207, 166, 0.8), inset 0 0 60px rgba(255,255,255,0.3); }
 .crystal-count { font-size: 0.8rem; color: var(--gold-bright); letter-spacing: 0.2em; }
 
 /* ---------- 鑑定中アニメーション ---------- */
@@ -353,7 +353,7 @@ input[type="range"]::-webkit-slider-thumb {
   margin: 14px 0;
   padding: 16px 18px;
   border-left: 2px solid var(--gold);
-  background: rgba(212, 175, 106, 0.07);
+  background: rgba(217, 166, 124, 0.07);
   border-radius: 0 10px 10px 0;
 }
 .oracle-box strong { color: var(--gold-bright); font-family: var(--serif); }
@@ -485,7 +485,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 .paywall-plan:hover { transform: translateY(-3px); border-color: var(--gold); }
 .plan-main {
-  background: linear-gradient(135deg, rgba(212, 175, 106, 0.18), rgba(229, 138, 168, 0.1));
+  background: linear-gradient(135deg, rgba(217, 166, 124, 0.18), rgba(242, 149, 181, 0.1));
   border-color: var(--gold);
 }
 .pp-name { font-family: var(--serif); font-weight: 700; font-size: 1.02rem; color: var(--gold-bright); }
@@ -558,7 +558,7 @@ input[type="range"]::-webkit-slider-thumb {
 .color-swatch:hover {
   transform: scale(1.12);
   border-color: var(--gold-bright);
-  box-shadow: 0 0 26px rgba(240, 207, 142, 0.4);
+  box-shadow: 0 0 26px rgba(243, 207, 166, 0.4);
 }
 @media (max-width: 480px) { .color-grid { gap: 12px; } }
 
@@ -585,11 +585,11 @@ input[type="range"]::-webkit-slider-thumb {
   gap: 8px;
   transition: transform 0.25s, border-color 0.25s, background 0.25s;
 }
-.moon-btn .moon-icon { font-size: 2rem; filter: drop-shadow(0 0 12px rgba(240, 207, 142, 0.5)); }
+.moon-btn .moon-icon { font-size: 2rem; filter: drop-shadow(0 0 12px rgba(243, 207, 166, 0.5)); }
 .moon-btn:hover {
   transform: translateY(-4px);
   border-color: var(--gold);
-  background: rgba(212, 175, 106, 0.08);
+  background: rgba(217, 166, 124, 0.08);
 }
 
 /* ---------- 羅針盤を回す ---------- */
@@ -606,7 +606,7 @@ input[type="range"]::-webkit-slider-thumb {
 .compass-stage:active { cursor: grabbing; }
 .compass-stage .compass-svg { width: 100%; height: 100%; filter: drop-shadow(0 0 30px rgba(140, 110, 220, 0.3)); }
 .compass-stage.cmp-settled .compass-svg {
-  filter: drop-shadow(0 0 46px rgba(240, 207, 142, 0.65));
+  filter: drop-shadow(0 0 46px rgba(243, 207, 166, 0.65));
   transition: filter 0.8s;
 }
 .compass-hint {
@@ -718,7 +718,7 @@ input[type="range"]::-webkit-slider-thumb {
   width: 100%;
   margin-top: 18px;
   padding: 12px;
-  background: rgba(212, 175, 106, 0.08);
+  background: rgba(217, 166, 124, 0.08);
   border: 1px solid var(--card-border);
   border-radius: 10px;
   color: var(--gold-bright);
@@ -727,7 +727,7 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: pointer;
   transition: background 0.2s;
 }
-.next-chapter:hover { background: rgba(212, 175, 106, 0.16); }
+.next-chapter:hover { background: rgba(217, 166, 124, 0.16); }
 
 /* ---------- モバイル固定CTA ---------- */
 .sticky-cta {
@@ -820,7 +820,7 @@ input[type="range"]::-webkit-slider-thumb {
   padding: 20px 24px;
   border: 1px solid var(--card-border);
   border-radius: 16px;
-  background: linear-gradient(160deg, rgba(212, 175, 106, 0.1), rgba(229, 138, 168, 0.06));
+  background: linear-gradient(160deg, rgba(217, 166, 124, 0.1), rgba(242, 149, 181, 0.06));
   text-align: center;
   position: relative;
 }
@@ -880,7 +880,7 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: 50%;
   object-fit: cover;
   border: 1px solid var(--gold);
-  box-shadow: 0 0 30px rgba(212, 175, 106, 0.3);
+  box-shadow: 0 0 30px rgba(217, 166, 124, 0.3);
   flex-shrink: 0;
 }
 .letter-sign {
@@ -904,7 +904,7 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: 50%;
   object-fit: cover;
   border: 1px solid var(--gold);
-  box-shadow: 0 0 24px rgba(212, 175, 106, 0.4);
+  box-shadow: 0 0 24px rgba(217, 166, 124, 0.4);
   margin-bottom: 12px;
 }
 .paywall-quote {

@@ -87,7 +87,7 @@ var Compass = (function () {
       '<div class="score-dial">' +
       '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">' +
       '<defs><linearGradient id="dialGrad" x1="0" y1="1" x2="1" y2="0">' +
-      '<stop offset="0%" stop-color="#d4af6a"/><stop offset="100%" stop-color="#e58aa8"/></linearGradient></defs>' +
+      '<stop offset="0%" stop-color="#d9a67c"/><stop offset="100%" stop-color="#f295b5"/></linearGradient></defs>' +
       '<path class="dial-track" d="M ' + pt(start, 84) + " A 84 84 0 1 1 " + pt(start + sweep, 84) + '"/>' +
       '<path class="dial-arc" d="M ' + pt(start, 84) + " A 84 84 0 " + largeArc + " 1 " + pt(scoreArcEnd, 84) + '"/>' +
       ticks(100, 100, 78, 72, 54, "cmp-tick") +

@@ -298,8 +298,13 @@
         '</div><div class="step-next"><button class="btn btn-gold" id="go">これで決める</button></div></div>';
       var sr = document.getElementById("sr");
       sr.addEventListener("input", function () {
-        document.getElementById("sv").textContent = sr.value;
+        var sv = document.getElementById("sv");
+        sv.textContent = sr.value;
         document.getElementById("sl").textContent = labels[Math.min(4, Math.floor(sr.value / 21))];
+        // 数値が弾むポップ
+        sv.classList.remove("pop");
+        void sv.offsetWidth;
+        sv.classList.add("pop");
       });
       document.getElementById("go").addEventListener("click", function () {
         answers.depth = sr.value;
@@ -354,10 +359,14 @@
       });
       html += "</div></div>";
       $wizard.innerHTML = html;
+      var picked = false;
       $wizard.querySelectorAll(".color-swatch").forEach(function (b) {
         b.addEventListener("click", function () {
+          if (picked) return;
+          picked = true;
+          b.classList.add("chosen");
           answers.color = parseInt(b.dataset.i, 10);
-          next();
+          setTimeout(next, 340);
         });
       });
     },
@@ -374,10 +383,14 @@
       });
       html += "</div></div>";
       $wizard.innerHTML = html;
+      var picked = false;
       $wizard.querySelectorAll(".moon-btn").forEach(function (b) {
         b.addEventListener("click", function () {
+          if (picked) return;
+          picked = true;
+          b.classList.add("chosen");
           answers.moon = parseInt(b.dataset.i, 10);
-          next();
+          setTimeout(next, 340);
         });
       });
     },
@@ -396,6 +409,7 @@
         var dirs = ["愛", "縁", "情", "運"];
         var dir = dirs[Math.round(finalAngle / 90) % 4];
         document.getElementById("chint").textContent = "針は「" + dir + "」を指しました";
+        if (window.FX) FX.heartBurst(stage); // 止まった瞬間、ハートが舞う
         setTimeout(next, 1400);
       });
     }
@@ -480,11 +494,15 @@
     });
     html += "</div></div>";
     $wizard.innerHTML = html;
+    var picked = false;
     $wizard.querySelectorAll(".choice-btn").forEach(function (b) {
       b.addEventListener("click", function () {
+        if (picked) return;
+        picked = true;
+        b.classList.add("chosen"); // 選んだ瞬間に光ってから進む
         answers[key] = b.dataset.v;
         answers[key + "_label"] = b.textContent;
-        next();
+        setTimeout(next, 300);
       });
     });
   }
