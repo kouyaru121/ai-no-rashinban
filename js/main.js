@@ -74,11 +74,16 @@
         place: Engine.pick(rng, DATA.luckyPlaces),
         word: Engine.pick(rng, DATA.luckyWords)
       });
+      var shareText = encodeURIComponent(
+        "【愛の羅針盤】今日の恋みくじは「" + rank + "」🧭\n" + text +
+        "\nhttps://kouyaru121.github.io/ai-no-rashinban/ #愛の羅針盤"
+      );
       document.getElementById("omikuji-area").innerHTML =
         '<div class="omikuji-result">' +
         '<p class="omikuji-rank">' + rank + "</p>" +
         '<p class="omikuji-text">' + text + "</p>" +
         '<a class="btn btn-gold omikuji-cta" href="fortune.html?g=aisho">この先を、本鑑定で視る →</a>' +
+        '<p class="omikuji-share"><a target="_blank" rel="noopener" href="https://www.threads.net/intent/post?text=' + shareText + '">🧭 みくじを Threads でシェア</a></p>' +
         "</div>";
     });
   }

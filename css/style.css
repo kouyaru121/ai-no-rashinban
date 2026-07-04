@@ -747,3 +747,21 @@ section {
 @media (prefers-reduced-motion: reduce) {
   .petal, .hero-compass .cmp-rose { animation: none !important; }
 }
+
+/* ---------- フッターの規約リンク ---------- */
+.footer-links { margin-bottom: 14px; }
+.footer-links a {
+  font-size: 0.74rem;
+  color: var(--text-dim);
+  text-decoration: underline;
+}
+.footer-links a:hover { color: var(--gold-bright); }
+
+/* ---------- 恋みくじのシェア ---------- */
+.omikuji-share { margin-top: 16px; }
+.omikuji-share a {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  text-decoration: underline;
+}
+.omikuji-share a:hover { color: var(--gold-bright); }
