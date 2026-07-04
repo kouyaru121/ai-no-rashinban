@@ -605,7 +605,10 @@
   }
 
   // ---------- 読了プログレスバー + モバイル固定CTA ----------
+  var readProgressInit = false;
   function initReadProgress() {
+    if (readProgressInit) return;
+    readProgressInit = true;
     if (!document.querySelector(".read-progress")) {
       var bar = document.createElement("div");
       bar.className = "read-progress";
