@@ -121,15 +121,26 @@
   var stepIndex = 0;
   var lastResultRenderer = null;
 
-  // ---------- 進捗バー ----------
+  // ---------- 進捗バー (2歩目以降は戻るボタン付き) ----------
   function progressHtml() {
     var pct = Math.round((stepIndex / conf.steps.length) * 100);
+    var back = stepIndex > 1
+      ? '<button class="wizard-back" data-back>‹ 戻る</button>'
+      : "";
     return (
-      '<div class="progress">' +
+      '<div class="progress">' + back +
       '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
       '<span class="progress-text">' + stepIndex + " / " + conf.steps.length + "</span></div>"
     );
   }
+
+  // 戻るボタン (イベント委譲で全ステップに対応)
+  $wizard.addEventListener("click", function (e) {
+    if (e.target.closest("[data-back]") && stepIndex > 1) {
+      stepIndex--;
+      renderStep();
+    }
+  });
 
   function next() {
     stepIndex++;
@@ -150,27 +161,40 @@
         furin: "誰にも話せないその関係の、行き着く先を静かに視ます。<br>入力内容が外部に出ることはありません。",
         uwaki: "違和感の正体を、行動サインから割り出します。<br>覚悟ができたら、始めてください。"
       };
-      // 前回の鑑定書があれば復元ボタンを出す (何度でも読み返せる)
-      var saved = localStorage.getItem("rashinban_last_" + genre);
-      var resumeBtn = saved
-        ? '<div class="step-next"><button class="btn btn-line" id="resume">前回の鑑定書をひらく</button></div>'
-        : "";
+      // 保存済みの鑑定書があれば書棚として並べる (何度でも読み返せる)
+      var history = loadHistory();
+      var shelf = "";
+      if (history.length) {
+        shelf = '<div class="shelf"><p class="shelf-title">✦ あなたの鑑定書棚</p>';
+        history.forEach(function (h, i) {
+          var d = new Date(h.ts);
+          var gname = { aisho: "相性完全鑑定", renai: "恋愛成就", furin: "許されない恋", uwaki: "浮気診断" }[h.genre] || "";
+          shelf +=
+            '<button class="shelf-item" data-h="' + i + '">' +
+            '<span class="shelf-names">' + h.answers.you.name + " ✦ " + h.answers.partner.name + "</span>" +
+            '<span class="shelf-meta">' + gname + " / " + (d.getMonth() + 1) + "月" + d.getDate() + "日</span></button>";
+        });
+        shelf += "</div>";
+      }
       $wizard.innerHTML =
         progressHtml() +
         '<div class="step"><h1 class="step-q">' + conf.title + "</h1>" +
         '<p class="step-sub">' + leadMap[genre] + "</p>" +
         '<div class="step-next"><button class="btn btn-gold btn-lg" id="go">鑑定をはじめる</button></div>' +
-        resumeBtn + "</div>";
+        shelf + "</div>";
       document.getElementById("go").addEventListener("click", function () {
         if (freeLeft() <= 0) { openPaywall(); return; }
         next();
       });
-      if (saved) {
-        document.getElementById("resume").addEventListener("click", function () {
-          answers = JSON.parse(saved); // 復元は無料 (回数を消費しない)
+      $wizard.querySelectorAll(".shelf-item").forEach(function (b) {
+        b.addEventListener("click", function () {
+          var h = history[parseInt(b.dataset.h, 10)];
+          genre = h.genre;          // 別ジャンルの鑑定書もその場で開ける
+          conf = GENRES[genre];
+          answers = h.answers;      // 読み返しは無料 (回数を消費しない)
           showResult();
         });
-      }
+      });
     },
 
     you: function () { personForm("あなた", "you"); },
@@ -399,10 +423,39 @@
       '<select id="f-month" required><option value="">月</option>' + months + "</select>" +
       '<select id="f-day" required><option value="">日</option>' + days + "</select>" +
       "</div></label>" +
+      '<p class="live-sign" id="live-sign"></p>' +
       "<label>血液型" +
       '<select id="f-blood"><option>A</option><option>B</option><option>O</option><option>AB</option><option value="A">わからない</option></select></label>' +
       '<div class="step-next"><button type="submit" class="btn btn-gold">次へ</button></div>' +
       "</form></div>";
+
+    // 戻ってきた時は前回の入力を復元
+    var prev = answers[key];
+    if (prev) {
+      document.getElementById("f-name").value = prev.name;
+      document.getElementById("f-year").value = prev.year;
+      document.getElementById("f-month").value = prev.month;
+      document.getElementById("f-day").value = prev.day;
+      document.getElementById("f-blood").value = prev.blood;
+    }
+
+    // 生年月日が揃った瞬間に星座・干支を映す (視られている感)
+    ["f-year", "f-month", "f-day"].forEach(function (id) {
+      document.getElementById(id).addEventListener("change", function () {
+        var y = document.getElementById("f-year").value;
+        var m = document.getElementById("f-month").value;
+        var d = document.getElementById("f-day").value;
+        var el = document.getElementById("live-sign");
+        if (y && m && d) {
+          var prof = Engine.buildProfile({ name: "", year: y, month: m, day: d });
+          el.textContent = "✦ " + prof.zodiac + "・" + prof.eto + "年・運命数" + prof.lifePath;
+          el.classList.add("shown");
+        } else {
+          el.textContent = "";
+          el.classList.remove("shown");
+        }
+      });
+    });
 
     document.getElementById("pf").addEventListener("submit", function (e) {
       e.preventDefault();
@@ -473,9 +526,34 @@
   // ==========================================================
   // 結果生成
   // ==========================================================
+  // ---------- 鑑定書棚 (履歴) ----------
+  function loadHistory() {
+    var list = [];
+    try { list = JSON.parse(localStorage.getItem("rashinban_history") || "[]"); } catch (e) {}
+    // 旧形式 (rashinban_last_*) からの引き継ぎ
+    if (!list.length) {
+      ["aisho", "renai", "furin", "uwaki"].forEach(function (g) {
+        var old = localStorage.getItem("rashinban_last_" + g);
+        if (old) {
+          try { list.push({ genre: g, answers: JSON.parse(old), ts: Date.now() }); } catch (e) {}
+        }
+      });
+    }
+    return list;
+  }
+
+  function saveToHistory() {
+    var list = loadHistory();
+    var key = genre + JSON.stringify(answers);
+    list = list.filter(function (h) { return h.genre + JSON.stringify(h.answers) !== key; });
+    list.unshift({ genre: genre, answers: answers, ts: Date.now() });
+    if (list.length > 10) list = list.slice(0, 10); // 最大10冊
+    try { localStorage.setItem("rashinban_history", JSON.stringify(list)); } catch (e) {}
+  }
+
   function showResult() {
-    // 鑑定書を保存 (リロード後も「前回の鑑定書をひらく」で読み返せる)
-    try { localStorage.setItem("rashinban_last_" + genre, JSON.stringify(answers)); } catch (e) {}
+    // 鑑定書棚に保存 (リロード後も読み返せる)
+    saveToHistory();
 
     var u = Engine.buildProfile(answers.you);
     var p = Engine.buildProfile(answers.partner);
@@ -669,6 +747,7 @@
       "</div>" +
       '<p class="result-sub">全20章 + 365日相性カレンダー</p>' +
       Compass.dial(ctx.score) +
+      todayBox(seed, ctx) +
       "</div>";
 
     // ---- 第1〜3章 (無料) ----
@@ -731,7 +810,7 @@
     }
 
     html += chapterHtml(17, "ふたりの開運チャーム一覧",
-      chosen +
+      tarotBoxes() + chosen +
       '<div class="oracle-box"><strong>ラッキーカラー:</strong> ' + ctx.color + "</div>" +
       '<div class="oracle-box"><strong>ラッキーアイテム:</strong> ' + ctx.item + "</div>" +
       '<div class="oracle-box"><strong>縁を呼ぶ場所:</strong> ' + ctx.place + "</div>" +
@@ -741,7 +820,10 @@
     html += chapterHtml(18, "ふたりの365日 相性カレンダー",
       para("今日から365日、ふたりの毎日を一日ずつ読みました。毎晩、その日の項を確かめてください。") + calendarHtml(seed, ctx), 2);
 
-    html += chapterHtml(19, "鑑定士 月詠紫苑からの手紙", fillPickN(rng, C.letterCore, 2, ctx), 2);
+    html += chapterHtml(19, "鑑定士 月詠紫苑からの手紙",
+      fillPickN(rng, C.letterCore, 2, ctx) +
+      '<div class="letter-sign"><img src="teller.jpg" alt="月詠紫苑" loading="lazy">' +
+      '<p>月詠 紫苑<span>愛の羅針盤 主宰鑑定士</span></p></div>', 2);
 
     html += chapterHtml(20, "羅針盤の総括 — ふたりへの最終回答",
       para("総合相性" + ctx.score + "点。星座の角度、血の温度、干支の縁、そして365日の巡り——全てを重ねた最終回答を告げます。") +
@@ -749,6 +831,7 @@
         "鍵になるのは" + ctx.month + "月、そして" + ctx.date1 + "のあなたの一歩。この鑑定書を、その日まで手元に置いてください。") +
       '<div class="oracle-box"><strong>最終指針:</strong> 迷ったら「' + Engine.pick(rng, DATA.luckyWords) + "」。この言葉がふたりの合言葉になります。</div>", 2);
 
+    html += shareLink("【愛の羅針盤】" + u.name + "と" + p.name + "の相性、" + ctx.score + "点だった…🧭 当たりすぎて怖い");
     html += resultFooter();
     $result.innerHTML = html;
     bindChapterEvents();
@@ -774,17 +857,49 @@
     return html;
   }
 
+  // 「今日のふたり」— 毎日開きたくなるデイリーフック
+  function todayBox(seed, ctx) {
+    var e = dayEntry(seed, ctx, 0);
+    var d = new Date();
+    var label = (d.getMonth() + 1) + "月" + d.getDate() + "日";
+    if (userTier() >= 2) {
+      return (
+        '<div class="today-box">' +
+        '<p class="today-label">✦ 今日のふたり — ' + label + "</p>" +
+        '<p class="today-score">♥' + e.score + "</p>" +
+        '<p class="today-text"><b>' + e.text + "</b><br>" + e.action + "</p>" +
+        '<p class="today-note">毎日変わります。明日もここで。</p></div>'
+      );
+    }
+    // 無料ユーザーにはぼかして見せる (毎日課金の入口になる)
+    return (
+      '<div class="today-box today-locked" data-paywall>' +
+      '<p class="today-label">✦ 今日のふたり — ' + label + "</p>" +
+      '<p class="today-text locked-text">♥' + e.score + " " + e.text + " " + e.action + "</p>" +
+      '<p class="today-cta">🔒 プレミアムで毎日のふたりを読む</p></div>'
+    );
+  }
+
+  // 1日分の運勢を決定的に生成 (365日カレンダーと「今日のふたり」で共用)
+  function dayEntry(seed, ctx, i) {
+    var dr = Engine.createRng(seed + 1000 + i);
+    var score = 40 + Math.floor(dr() * 61); // 40〜100
+    var pool = score >= 78 ? DATA.daily.good : score >= 58 ? DATA.daily.mid : DATA.daily.low;
+    return {
+      score: score,
+      text: Engine.fill(Engine.pick(dr, pool), ctx),
+      action: Engine.fill(Engine.pick(dr, DATA.daily.action), ctx)
+    };
+  }
+
   // 365日カレンダー (月ごとの折りたたみ)
   function calendarHtml(seed, ctx) {
     var html = "";
     var d = new Date();
     var currentMonth = -1;
     for (var i = 0; i < 365; i++) {
-      var dr = Engine.createRng(seed + 1000 + i);
-      var score = 40 + Math.floor(dr() * 61); // 40〜100
-      var pool = score >= 78 ? DATA.daily.good : score >= 58 ? DATA.daily.mid : DATA.daily.low;
-      var text = Engine.fill(Engine.pick(dr, pool), ctx);
-      var action = Engine.fill(Engine.pick(dr, DATA.daily.action), ctx);
+      var e = dayEntry(seed, ctx, i);
+      var score = e.score, text = e.text, action = e.action;
 
       if (d.getMonth() !== currentMonth) {
         if (currentMonth !== -1) html += "</details>";
@@ -855,6 +970,8 @@
       '<div class="result-share">より深く知りたい方へ — ' + p.name + "さんとの縁を全20章・365日で読み解く" +
       '<br><a href="fortune.html?g=aisho" style="color:var(--gold-bright);text-decoration:underline">「ふたりの相性 完全鑑定」はこちら</a></div>';
 
+    html += shareLink("【愛の羅針盤】" + titles[genre] + "、やってみたら具体的すぎて鳥肌…🧭");
+
     html += resultFooter();
     $result.innerHTML = html;
     bindChapterEvents();
@@ -862,10 +979,29 @@
 
   function charmHtml(rng, ctx) {
     return (
+      tarotBoxes() +
       '<div class="oracle-box"><strong>ラッキーカラー:</strong> ' + ctx.color + "</div>" +
       '<div class="oracle-box"><strong>ラッキーアイテム:</strong> ' + ctx.item + "</div>" +
       '<div class="oracle-box"><strong>縁を呼ぶ場所:</strong> ' + ctx.place + "</div>" +
       '<div class="oracle-box"><strong>勝負の時間帯:</strong> ' + ctx.hour + "</div>"
+    );
+  }
+
+  // あなたが選んだ導きのカード3枚の意味
+  function tarotBoxes() {
+    if (!answers.tarot || !answers.tarot.length) return "";
+    return answers.tarot.map(function (t) {
+      return '<div class="oracle-box"><strong>導きのカード</strong> ' + (DATA.tarot[t] || t) + "</div>";
+    }).join("");
+  }
+
+  // Threads シェアリンク (流入元への還流ループ)
+  function shareLink(text) {
+    var url = "https://kouyaru121.github.io/ai-no-rashinban/";
+    var full = text + "\n" + url + " #愛の羅針盤";
+    return (
+      '<a class="share-threads" target="_blank" rel="noopener" href="https://www.threads.net/intent/post?text=' +
+      encodeURIComponent(full) + '">🧭 結果を Threads でシェア</a>'
     );
   }
 

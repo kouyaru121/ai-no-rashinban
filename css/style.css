@@ -438,6 +438,14 @@ section {
   border: 1px solid var(--gold);
   box-shadow: 0 0 30px rgba(212, 175, 106, 0.25);
 }
+.teller-face {
+  flex-shrink: 0;
+  width: 110px; height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--gold);
+  box-shadow: 0 0 30px rgba(212, 175, 106, 0.35);
+}
 .teller-name { font-family: var(--serif); font-size: 1.25rem; font-weight: 700; margin-bottom: 10px; }
 .teller-name span { font-size: 0.8rem; color: var(--text-dim); font-weight: 400; }
 .teller-desc { font-size: 0.9rem; color: var(--text-dim); margin-bottom: 16px; }
