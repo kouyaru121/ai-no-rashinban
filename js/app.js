@@ -118,6 +118,12 @@
     }
   };
 
+  // 動作確認用: ?reset=1 で状態を初期化 (無料回数・会員状態・鑑定書棚をリセット)
+  if (new URLSearchParams(location.search).get("reset") === "1") {
+    localStorage.clear();
+    localStorage.setItem("rashinban_age_ok", "1");
+  }
+
   var genre = (new URLSearchParams(location.search).get("g")) || "aisho";
   if (!GENRES[genre]) genre = "aisho";
   var conf = GENRES[genre];
@@ -181,12 +187,18 @@
         });
         shelf += "</div>";
       }
+      // 無料回数を使い切っている場合は、理由と次の一手を明示する
+      var exhausted = freeLeft() <= 0;
+      var startArea = exhausted
+        ? '<div class="step-next"><button class="btn btn-gold btn-lg" id="go">先行登録して鑑定する<span class="btn-sub">無料・メールだけ</span></button></div>' +
+          '<p class="step-sub" style="margin-top:14px">無料鑑定を使い切りました。先行会員登録 (無料) で' +
+          (userTier() >= 1 ? "明日また1回鑑定できます。" : "続きが解放されます。") + "</p>"
+        : '<div class="step-next"><button class="btn btn-gold btn-lg" id="go">鑑定をはじめる</button></div>';
       $wizard.innerHTML =
         progressHtml() +
         '<div class="step"><h1 class="step-q">' + conf.title + "</h1>" +
         '<p class="step-sub">' + leadMap[genre] + "</p>" +
-        '<div class="step-next"><button class="btn btn-gold btn-lg" id="go">鑑定をはじめる</button></div>' +
-        shelf + "</div>";
+        startArea + shelf + "</div>";
       document.getElementById("go").addEventListener("click", function () {
         if (freeLeft() <= 0) { openPaywall(); return; }
         Track.event("fortune_start", { genre: genre });
