@@ -913,3 +913,33 @@ input[type="range"]::-webkit-slider-thumb {
   color: var(--gold-bright);
   margin: -12px 0 22px;
 }
+
+/* ==========================================================
+   3Dタロット / 羅針盤チルト
+   ========================================================== */
+.tarot3d {
+  width: 100%;
+  height: 440px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--card-border);
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(242, 149, 181, 0.12), transparent 60%),
+    radial-gradient(ellipse at 50% 100%, rgba(85, 40, 78, 0.6), transparent 70%),
+    #1c0f20;
+  touch-action: manipulation;
+}
+.tarot3d canvas { display: block; }
+@media (max-width: 640px) { .tarot3d { height: 380px; } }
+
+/* 羅針盤の3Dチルト (親にパースを与え、盤面が指に傾く) */
+.compass-tilt {
+  perspective: 700px;
+  width: fit-content;
+  margin: 0 auto;
+}
+.compass-tilt .compass-stage {
+  transform-style: preserve-3d;
+  transition: transform 0.25s ease-out;
+  margin: 6px auto 24px;
+}

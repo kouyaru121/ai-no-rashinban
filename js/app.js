@@ -326,9 +326,30 @@
       $wizard.innerHTML =
         progressHtml() +
         '<div class="step"><h2 class="step-q">導きのカードを3枚、選んでください</h2>' +
-        '<p class="step-sub">考えず、指が止まったものを。あなたの無意識が選びます。</p>' +
-        '<div class="tarot-field" id="tf"></div>' +
+        '<p class="step-sub" id="ts">紫苑が、あなたのためにカードを配っています——</p>' +
+        '<div class="tarot3d" id="t3d"></div>' +
         '<p class="tarot-count" id="tc">あと 3 枚</p></div>';
+
+      function onProgress(remain) {
+        document.getElementById("tc").textContent =
+          remain <= 0 ? "カードが揃いました…" : "あと " + remain + " 枚";
+      }
+      function onDone(picked) {
+        answers.tarot = picked;
+        next();
+      }
+
+      // 3D版 (three.js) → 失敗したら従来のCSS版へフォールバック
+      var ok = false;
+      try {
+        ok = window.Tarot3D && Tarot3D.mount(document.getElementById("t3d"), CARDS, onProgress, onDone);
+      } catch (e) { ok = false; }
+      if (ok) return;
+
+      // ---------- フォールバック (CSS版) ----------
+      document.getElementById("ts").textContent = "考えず、指が止まったものを。あなたの無意識が選びます。";
+      var t3d = document.getElementById("t3d");
+      t3d.outerHTML = '<div class="tarot-field" id="tf"></div>';
       var tf = document.getElementById("tf");
       var picked = [];
       CARDS.forEach(function (c, i) {
@@ -342,12 +363,8 @@
           if (picked.length >= 3 || card.classList.contains("flipped")) return;
           card.classList.add("flipped");
           picked.push(c[1]);
-          document.getElementById("tc").textContent =
-            picked.length >= 3 ? "カードが揃いました…" : "あと " + (3 - picked.length) + " 枚";
-          if (picked.length === 3) {
-            answers.tarot = picked;
-            setTimeout(next, 900);
-          }
+          onProgress(3 - picked.length);
+          if (picked.length === 3) setTimeout(function () { onDone(picked); }, 900);
         });
         tf.appendChild(card);
       });
@@ -407,9 +424,21 @@
         progressHtml() +
         '<div class="step"><h2 class="step-q">最後に、羅針盤を回してください</h2>' +
         '<p class="step-sub">' + (answers.partner ? answers.partner.name + "さん" : "あの人") + "を思い浮かべながら、指で勢いをつけて。<br>針が止まった場所が、ふたりの縁の入口です。</p>" +
-        '<div class="compass-stage" id="cstage">' + Compass.svg(320, null) + "</div>" +
+        '<div class="compass-tilt" id="ctilt"><div class="compass-stage" id="cstage">' + Compass.svg(320, null) + "</div></div>" +
         '<p class="compass-hint" id="chint">— 指でまわす —</p></div>';
       var stage = document.getElementById("cstage");
+
+      // 3Dチルト: 指の位置へ盤面がわずかに傾く
+      var tilt = document.getElementById("ctilt");
+      tilt.addEventListener("pointermove", function (e) {
+        var r = tilt.getBoundingClientRect();
+        var dx = (e.clientX - r.left) / r.width - 0.5;
+        var dy = (e.clientY - r.top) / r.height - 0.5;
+        stage.style.transform = "rotateX(" + (-dy * 16) + "deg) rotateY(" + (dx * 16) + "deg)";
+      });
+      tilt.addEventListener("pointerleave", function () {
+        stage.style.transform = "rotateX(0deg) rotateY(0deg)";
+      });
       Compass.spinnable(stage, function (finalAngle) {
         answers.compassAngle = Math.round(finalAngle);
         var dirs = ["愛", "縁", "情", "運"];
