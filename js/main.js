@@ -67,6 +67,7 @@
     omikujiBtn.addEventListener("click", function () {
       if (opening) return;
       opening = true;
+      if (window.Track) Track.event("omikuji_open", {});
       // 封が震えてから開く
       omikujiBtn.classList.add("shake");
       setTimeout(reveal, 620);

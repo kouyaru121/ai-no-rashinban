@@ -59,7 +59,10 @@
   }
 
   // ---------- モーダル ----------
-  function openPaywall() { $paywall.hidden = false; }
+  function openPaywall() {
+    $paywall.hidden = false;
+    Track.event("paywall_view", { genre: genre, tier: userTier() });
+  }
   function closePaywall() { $paywall.hidden = true; }
   var pendingPlan = null;
 
@@ -71,11 +74,13 @@
   document.querySelectorAll(".paywall-plan").forEach(function (btn) {
     btn.addEventListener("click", function () {
       pendingPlan = btn.dataset.plan;
+      // 課金意思の計測 (反応テストの主要KPI)
+      Track.event("plan_select", { plan: pendingPlan, genre: genre });
       closePaywall();
       document.getElementById("register-title").textContent =
-        pendingPlan === "premium" ? "プレミアム登録 (初月¥480)" : "無料会員登録";
+        pendingPlan === "premium" ? "先行会員登録 (いまは無料)" : "無料会員登録";
       document.getElementById("register-submit").textContent =
-        pendingPlan === "premium" ? "登録して全章を解放する" : "登録して続きを読む";
+        pendingPlan === "premium" ? "先行登録して全章を解放する" : "登録して続きを読む";
       $register.hidden = false;
     });
   });
@@ -84,7 +89,7 @@
     e.preventDefault();
     localStorage.setItem(LS.reg, "1");
     if (pendingPlan === "premium") localStorage.setItem(LS.prem, "1");
-    document.getElementById("register-note").textContent = "※ デモ版のため実際の決済は発生しません。";
+    Track.event("register_submit", { plan: pendingPlan || "free", genre: genre });
     $register.hidden = true;
     updateBadge();
     // 結果表示中なら解放状態で再描画
@@ -184,6 +189,7 @@
         shelf + "</div>";
       document.getElementById("go").addEventListener("click", function () {
         if (freeLeft() <= 0) { openPaywall(); return; }
+        Track.event("fortune_start", { genre: genre });
         next();
       });
       $wizard.querySelectorAll(".shelf-item").forEach(function (b) {
@@ -572,6 +578,7 @@
   function showResult() {
     // 鑑定書棚に保存 (リロード後も読み返せる)
     saveToHistory();
+    Track.event("fortune_complete", { genre: genre, tier: userTier() });
 
     var u = Engine.buildProfile(answers.you);
     var p = Engine.buildProfile(answers.partner);
@@ -735,6 +742,12 @@
     $result.querySelectorAll("[data-paywall], .locked-preview").forEach(function (el) {
       el.addEventListener("click", openPaywall);
     });
+    var share = $result.querySelector(".share-threads");
+    if (share) {
+      share.addEventListener("click", function () {
+        Track.event("share_click", { genre: genre, source: "result" });
+      });
+    }
     var again = $result.querySelector(".again");
     if (again) again.addEventListener("click", function () { location.href = "index.html#menu"; });
   }
