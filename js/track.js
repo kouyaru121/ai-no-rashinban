@@ -7,7 +7,7 @@ var Track = (function () {
   "use strict";
 
   // ★ GA4 の測定IDをここに貼る (例: "G-XXXXXXXXXX")。空なら計測オフ
-  var GA_ID = "";
+  var GA_ID = "G-QN1WHNBV34";
 
   var enabled = /^G-[A-Z0-9]+$/.test(GA_ID);
 
