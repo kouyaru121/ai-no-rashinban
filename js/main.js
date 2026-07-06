@@ -5,6 +5,14 @@
 (function () {
   "use strict";
 
+  // ---------- メニューカードのSVGアイコン注入 ----------
+  if (window.ICONS) {
+    document.querySelectorAll(".menu-icon[data-ico]").forEach(function (el) {
+      var ico = ICONS[el.dataset.ico];
+      if (ico) el.innerHTML = ico;
+    });
+  }
+
   // ---------- スクロールでヘッダーに背景 ----------
   var header = document.getElementById("site-header");
   window.addEventListener(
@@ -93,7 +101,7 @@
         '<p class="omikuji-rank">' + rank + "</p>" +
         '<p class="omikuji-text">' + text + "</p>" +
         '<a class="btn btn-gold omikuji-cta" href="fortune.html?g=aisho">この先を、本鑑定で視る →</a>' +
-        '<p class="omikuji-share"><a target="_blank" rel="noopener" href="https://www.threads.net/intent/post?text=' + shareText + '">🧭 みくじを Threads でシェア</a></p>' +
+        '<p class="omikuji-share"><a target="_blank" rel="noopener" href="https://www.threads.net/intent/post?text=' + shareText + '">' + (window.ICONS ? ICONS.compass : "") + " みくじを Threads でシェア</a></p>" +
         "</div>";
       // 開封のきらめき
       if (window.FX) {

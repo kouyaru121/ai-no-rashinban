@@ -814,3 +814,13 @@ section {
 @media (prefers-reduced-motion: reduce) {
   .fx-p { display: none; }
 }
+
+/* ---------- SVGアイコン共通 ---------- */
+.ico {
+  width: 1.15em;
+  height: 1.15em;
+  display: inline-block;
+  vertical-align: -0.2em;
+}
+.menu-icon .ico { width: 42px; height: 42px; }
+.menu-icon { margin-bottom: 14px; }

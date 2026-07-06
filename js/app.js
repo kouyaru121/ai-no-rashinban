@@ -414,7 +414,7 @@
         '<p class="step-sub">月はあなたの深層を映します。直感で。</p>' +
         '<div class="moon-grid">';
       DATA.moons.forEach(function (m, i) {
-        html += '<button class="moon-btn" data-i="' + i + '"><span class="moon-icon">' + m.icon + "</span>" + m.name + "</button>";
+        html += '<button class="moon-btn" data-i="' + i + '"><span class="moon-icon">' + ICONS.moons[i] + "</span>" + m.name + "</button>";
       });
       html += "</div></div>";
       $wizard.innerHTML = html;
@@ -718,7 +718,7 @@
     return (
       '<section class="chapter locked">' +
       '<button class="chapter-head" data-paywall><span class="chapter-no">第' + no + '章</span>' +
-      title + '<span class="lock-icon">🔒</span></button>' +
+      title + '<span class="lock-icon">' + ICONS.lock + "</span></button>" +
       '<div class="locked-preview"><p class="locked-text">' + teaser + "…</p>" +
       '<div class="locked-cta"><p>✦ ' + need + " ✦</p></div></div></section>"
     );
@@ -760,7 +760,7 @@
         var title = ch.querySelector(".chapter-head").textContent.replace(/^第\d+章/, "").replace(/[▾🔒]/g, "").trim();
         var locked = ch.classList.contains("locked");
         links += '<a href="#ch-' + no + '" class="' + (locked ? "toc-locked" : "") + '">' +
-          '<span class="toc-no">' + no + "章</span>" + title + (locked ? " 🔒" : "") + "</a>";
+          '<span class="toc-no">' + no + "章</span>" + title + (locked ? " " + ICONS.lock : "") + "</a>";
       });
       toc.innerHTML = '<p class="toc-title">✦ 鑑定書の目次</p><div class="toc-grid">' + links + "</div>";
       var head = $result.querySelector(".result-head");
@@ -951,7 +951,7 @@
       '<div class="today-box today-locked" data-paywall>' +
       '<p class="today-label">✦ 今日のふたり — ' + label + "</p>" +
       '<p class="today-text locked-text">♥' + e.score + " " + e.text + " " + e.action + "</p>" +
-      '<p class="today-cta">🔒 プレミアムで毎日のふたりを読む</p></div>'
+      '<p class="today-cta">' + ICONS.lock + " プレミアムで毎日のふたりを読む</p></div>"
     );
   }
 
@@ -1076,7 +1076,7 @@
     var full = text + "\n" + url + " #愛の羅針盤";
     return (
       '<a class="share-threads" target="_blank" rel="noopener" href="https://www.threads.net/intent/post?text=' +
-      encodeURIComponent(full) + '">🧭 結果を Threads でシェア</a>'
+      encodeURIComponent(full) + '">' + ICONS.compass + " 結果を Threads でシェア</a>"
     );
   }
 

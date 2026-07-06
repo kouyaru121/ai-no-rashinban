@@ -943,3 +943,10 @@ input[type="range"]::-webkit-slider-thumb {
   transition: transform 0.25s ease-out;
   margin: 6px auto 24px;
 }
+
+/* ---------- SVGアイコンの文脈別サイズ ---------- */
+.moon-btn .moon-icon .ico { width: 38px; height: 38px; filter: drop-shadow(0 0 10px rgba(243, 207, 166, 0.45)); }
+.lock-icon .ico { width: 1.05em; height: 1.05em; }
+.toc a .ico { width: 0.9em; height: 0.9em; opacity: 0.8; }
+.share-threads .ico { width: 1.3em; height: 1.3em; }
+.today-cta .ico { width: 1.05em; height: 1.05em; }
